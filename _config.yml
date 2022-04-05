@@ -106,3 +106,10 @@ deploy:
   type: git
   repo: https://github.com/NoelleHsieh/NoelleHsieh.github.io.git
   branch: master
+
+# hexo-filter-emoji
+emoji:
+  enable: true
+  className: github-emoji
+  styles:
+  customEmojis:
