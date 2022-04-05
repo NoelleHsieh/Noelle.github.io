@@ -1,0 +1,45 @@
+<% function displayCategoriesAndPosts(category) { var posts=category.posts; var
+  childCategories=site.categories.find({'parent': category._id}); var boxCSSClass='' ; if
+  (category.parents===undefined){ category.parents=[]; boxCSSClass='box' ; } var html='' ; html+='<div id="posts-list-'
+  + category.name + '" class="archive ' + boxCSSClass + '" ' + 'data-category="' + category.name.toLowerCase() + '" '
+  + 'data-parent-categories="' + category.parents.join(',') + '">' ; html
+  +='<div class="category-list-item text-xlarge">' ; html +='<a class="link-unstyled" href="' + url_for(category.path)
+  + '">' ; html +=category.name + ' (' + category.length + ')' ; html +='</a>' ; html +='</div>' ; html
+  +='<ul class="archive-posts">' ; if (childCategories.length <=0) { posts.sort('date', 'desc' ).forEach(function(post)
+  { html +='<li class="archive-post">' ; html +='<a class="archive-post-title" href="' + url_for(post.path) + '">' ;
+  html +=post.title || '(' + __('post.no_title')+ ')' ; html +='</a>' ; html +='<span class="archive-post-date">' ; html
+  +='<time datetime="' + date_xml(post.date) +'" itemprop="datePublished">'+ date(post.date, 'HH:mm:ss MMM-DD-YYYY') +
+  '</time>';
+  html +='</span>';
+  html +='</li>' ; });
+  }
+  if (childCategories.length> 0) {
+  childCategories.sort('name', 'asc').forEach(function(childCategory) {
+  childCategory.parents = category.parents.slice();
+  childCategory.parents.push(category.name.toLowerCase());
+  html += displayCategoriesAndPosts(childCategory);
+  });
+  }
+  html += '</ul>';
+  html += '</div>';
+  return html;
+  }
+  %>
+  <div id="categories-archives" class="main-content-wrap">
+    <section class="outer">
+      <% if (site.categories.length){ %>
+        <h1 class="page-type-title">
+          <%= __('categories') %>
+        </h1>
+        <%- list_categories(site.categories, { show_count: theme.show_count, }) %>
+
+          <% } %>
+    </section>
+    <section class="outer">
+      <% site.categories.sort('name').each(function(category) { %>
+        <% if (!category.parent) { %>
+          <%- displayCategoriesAndPosts(category) %>
+            <% } %>
+              <% }); %>
+    </section>
+  </div>
